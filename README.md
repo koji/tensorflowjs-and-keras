@@ -41,6 +41,9 @@ $ node server.js
 
 ```
 
+#### demo
+https://sleepy-maker.github.io/tensorflowjs-and-keras/image_classification/app/public/  
+
 ## ToDo
 - [ ] Optimize model loading process  
 - [ ] Add webcam function  
