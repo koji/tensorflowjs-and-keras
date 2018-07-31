@@ -10,26 +10,28 @@ $('#image-selector').change(() => {
 });
 
 
+$("#model-selector").change(() => {
+    let modelName = $("#model-selector").val();
+    loadModel(modelName);
+});
+
 let model;
-(async function () {
-    model = await tf.loadModel("./models/VGG16/model.json");
+// load model
+async function loadModel(name) {
+    // show indicator
+    $(".progress-bar").show();
+    model = undefined;
+    model = await tf.loadModel(`./models/${name}/model.json`);
     $('.progress-bar').hide();
-})();
+};
 
 
 $('#predict').click(async function () {
     let image = $('#selected-image').get(0);
-    let tensor = tf.fromPixels(image)
-        .resizeNearestNeighbor([224, 224])
-        .toFloat();
-    //.expandDims();
+    let modelName = $("#model-selector").val();
 
-    // for preprocessing
-    let meanImageNetRGB = {
-        red: 123.68,
-        green: 116.779,
-        blue: 103.939
-    };
+    // preprocessing
+    let tensor = preprocessImage(image, modelName);
 
     // red, green, blue
     let indices = [
@@ -38,25 +40,7 @@ $('#predict').click(async function () {
         tf.tensor1d([2], "int32")
     ];
 
-    // 224 * 224 = 50176
-    let centeredRGB = {
-        red: tf.gather(tensor, indices[0], 2)
-            .sub(tf.scalar(meanImageNetRGB.red))
-            .reshape([50176]),
-        green: tf.gather(tensor, indices[1], 2)
-            .sub(tf.scalar(meanImageNetRGB.green))
-            .reshape([50176]),
-        blue: tf.gather(tensor, indices[2], 2)
-            .sub(tf.scalar(meanImageNetRGB.blue))
-            .reshape([50176]),
-    }
-
-    let preprocessedTensor = tf.stack([centeredRGB.red, centeredRGB.green, centeredRGB.blue], 1)
-        .reshape([224, 224, 3])
-        .reverse(2)
-        .expandDims();
-
-    let predictions = await model.predict(preprocessedTensor).data();
+    let predictions = await model.predict(tensor).data();
 
     //let predictions = await model.predict(tensor).data();
     let top5 = Array.from(predictions)
@@ -73,3 +57,25 @@ $('#predict').click(async function () {
         $('#prediction-list').append(`<li>${p.className}: ${p.probability.toFixed(6)}</li>`);
     });
 });
+
+
+function preprocessImage(image, modelName) {
+    let tensor = tf.fromPixels(image)
+        .resizeNearestNeighbor([224, 224])
+        .toFloat();
+
+    if (modelName == "VGG16") {
+        let meanImageNetRGB = tf.tensor1d([123.68, 116.779, 103.939]);
+        return tensor.sub(meanImageNetRGB)
+            .reverse(2)
+            .expandDims();
+    } else if (modelName == "MobileNet") {
+        let offset = tf.scalar(127.5);
+        return tensor.sub(offset)
+            .div(offset)
+            .expandDims();
+    } else {
+        throw new Error("unknow model is selected");
+    }
+
+}
