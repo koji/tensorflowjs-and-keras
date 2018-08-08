@@ -45,7 +45,7 @@ $ node server.js
 https://sleepy-maker.github.io/tensorflowjs-and-keras/image_classification/app/public/  
 
 ## ToDo
-- [ ] Add a function which allows users to select a model(VGG16/MobileNet)
-- [ ] Optimize model loading process  
+- [x] Add a function which allows users to select a model(VGG16/MobileNet)
+- [x] Optimize model loading process  
 - [ ] Add webcam function  
 - [ ] Add new functions  
