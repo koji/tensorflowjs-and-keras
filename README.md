@@ -42,10 +42,14 @@ $ node server.js
 ```
 
 #### demo
-https://sleepy-maker.github.io/tensorflowjs-and-keras/image_classification/app/public/  
+image_uploader version
+https://sleepy-maker.github.io/tensorflowjs-and-keras/image_classification/image_uploader/app/public/     
+webcam version    
+https://sleepy-maker.github.io/tensorflowjs-and-keras/image_classification/webcam/app/public/      
 
 ## ToDo
 - [x] Add a function which allows users to select a model(VGG16/MobileNet)
 - [x] Optimize model loading process  
-- [ ] Add webcam function  
+- [x] Add webcam function 
+- [ ] Rewrite with reactjs with typescript
 - [ ] Add new functions  
